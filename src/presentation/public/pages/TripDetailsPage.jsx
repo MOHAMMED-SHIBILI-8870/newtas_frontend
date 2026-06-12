@@ -76,7 +76,7 @@ export default function TripDetailsPage() {
         result?.data?.id ||
         result?.id
 
-      navigate(`/payment/${bookingId}`)
+      navigate(`/booking/${bookingId}/verify`)
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Failed to book trip'))
     } finally {
@@ -179,15 +179,6 @@ export default function TripDetailsPage() {
               </div>
 
               <div className="flex gap-3">
-                {isAuthenticated && !isAdmin && (
-                  <Link
-                    to={`/packages/${name}/edit`}
-                    className="inline-flex flex-1 items-center justify-center rounded-full border border-cyan-300 bg-cyan-50 px-5 py-3 text-sm font-semibold text-cyan-700 transition hover:bg-cyan-100"
-                  >
-                    Edit Trip
-                  </Link>
-                )}
-
                 <button
                   type="button"
                   onClick={handleBookTrip}

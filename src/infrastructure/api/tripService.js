@@ -25,3 +25,9 @@ export const updateCustomBookingPlans = (bookingId, plans) =>
 
 export const fetchAllBookings = () => api.get('/admin/orders/all').then(unwrapApiResponse)
 
+export const submitVerification = (formData) =>
+  api.post('/verifications', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }).then(unwrapApiResponse)

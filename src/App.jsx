@@ -34,6 +34,7 @@ import ReviewsPage from './presentation/admin/pages/ReviewsPage'
 import ComplaintsPage from './presentation/admin/pages/ComplaintsPage'
 import TrackingPage from './presentation/admin/pages/TrackingPage'
 import RolesPage from './presentation/admin/pages/RolesPage'
+import TripVerificationPage from './presentation/user/pages/TripVerificationPage'
 
 export default function App() {
   return (
@@ -102,6 +103,7 @@ export default function App() {
         <Route path="/payment/:bookingId"
           element={<PaymentGateway />}
         />
+        <Route path="/booking/:bookingId/verify" element={<TripVerificationPage />} />
       </Route>
 
       <Route element={<ProtectedRoute><UserLayout /></ProtectedRoute>}>

@@ -15,8 +15,8 @@ export const unwrapApiResponse = (response) => {
 }
 
 export const getApiErrorMessage = (error, fallback = 'Request failed') =>
-  error?.response?.data?.message ||
   error?.response?.data?.error ||
+  error?.response?.data?.message ||
   error?.message ||
   fallback
 
