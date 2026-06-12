@@ -20,6 +20,36 @@ export default function TripDetailsPage() {
   const [booking, setBooking] = useState(false)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [seats, setSeats] = useState(1)
+
+  const originalPrice = useMemo(() => {
+    if (!trip) return 0
+    let base = 0
+    if (trip.pricing_tiers && trip.pricing_tiers.length > 0) {
+      const tier = trip.pricing_tiers.find(t => t.members === seats)
+      if (tier) base = tier.price
+    }
+    if (base === 0) base = Number(trip.price || 0) * seats
+    return base
+  }, [trip, seats])
+
+  const displayedPrice = useMemo(() => {
+    if (!trip) return 0
+    const base = originalPrice
+    if (trip.group_discount_threshold > 0 && seats >= trip.group_discount_threshold) {
+       const discount = (base * (trip.group_discount_percent || 0)) / 100
+       return base - discount
+    }
+    return base
+  }, [trip, seats, originalPrice])
+
+  const chosenDuration = useMemo(() => {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  }, [startDate, endDate]);
 
   useEffect(() => {
     const loadTrip = async () => {
@@ -37,7 +67,13 @@ export default function TripDetailsPage() {
     void loadTrip()
   }, [name])
 
-  const plans = useMemo(() => (Array.isArray(trip?.plans) ? trip.plans : []), [trip])
+  const plans = useMemo(() => {
+    if (!Array.isArray(trip?.plans)) return [];
+    if (chosenDuration > 0) {
+      return trip.plans.filter(p => p.day_number <= chosenDuration);
+    }
+    return trip.plans;
+  }, [trip, chosenDuration])
 
   const handleBookTrip = async () => {
     if (!isAuthenticated) {
@@ -65,7 +101,7 @@ export default function TripDetailsPage() {
       const result = await bookTrip(trip.id, {
         start_date: startDate,
         end_date: endDate,
-        seats: 1,
+        seats: seats,
       })
 
       toast.success(result?.message || 'Trip booked successfully')
@@ -147,7 +183,17 @@ export default function TripDetailsPage() {
         <aside className="space-y-6">
           <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-[0.35em] text-cyan-600">Trip summary</p>
-            <h2 className="mt-2 text-3xl font-black text-slate-950">${Number(trip.price || 0).toFixed(0)}</h2>
+            <div className="flex items-baseline gap-3 mt-2">
+              <h2 className="text-3xl font-black text-slate-950">${Number(displayedPrice).toFixed(0)}</h2>
+              {originalPrice > displayedPrice && (
+                <span className="text-lg font-semibold text-slate-400 line-through">${Number(originalPrice).toFixed(0)}</span>
+              )}
+            </div>
+            {originalPrice > displayedPrice && (
+              <p className="mt-2 text-xs font-bold text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded-md">
+                {trip.group_discount_percent}% Group Discount Applied!
+              </p>
+            )}
             <div className="mt-5 space-y-3 text-sm text-slate-600">
               <SummaryRow label="Budget level" value={trip.budget_level || 'Medium'} />
               <SummaryRow label="Transport" value={trip.transport || 'Car'} />
@@ -175,6 +221,21 @@ export default function TripDetailsPage() {
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     min={startDate || new Date().toISOString().split('T')[0]}
                   />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label className="mb-1 block text-xs font-semibold text-slate-500">Number of Members</label>
+                  <select
+                    value={seats}
+                    onChange={(e) => setSeats(Number(e.target.value))}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 bg-white"
+                  >
+                    {Array.from({ length: trip.members || 10 }, (_, i) => i + 1).map(num => (
+                      <option key={num} value={num}>{num} {num === 1 ? 'Member' : 'Members'}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

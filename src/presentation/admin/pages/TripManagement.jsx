@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Plus,
   Search,
@@ -29,12 +29,18 @@ const initialForm = {
   from: '',
   to: '',
   duration: 1,
+  min_duration: 1,
+  concurrent_slots: 1,
+  group_discount_threshold: 0,
+  group_discount_percent: 0,
   trip_type: 'Family',
   budget_level: 'Medium',
+  price: 0,
   members: 1,
   children: 0,
   hotel_type: '3 Star',
   transport: 'Car',
+  pricing_tiers: [],
 }
 
 export default function TripManagement() {
@@ -84,12 +90,18 @@ export default function TripManagement() {
       from: trip.from || '',
       to: trip.to || '',
       duration: trip.duration || 1,
+      min_duration: trip.min_duration || 1,
+      concurrent_slots: trip.concurrent_slots || 1,
+      group_discount_threshold: trip.group_discount_threshold || 0,
+      group_discount_percent: trip.group_discount_percent || 0,
       trip_type: trip.trip_type || 'Family',
       budget_level: trip.budget_level || 'Medium',
+      price: trip.price || 0,
       members: trip.members || 1,
       children: trip.children || 0,
       hotel_type: trip.hotel_type || '3 Star',
       transport: trip.transport || 'Car',
+      pricing_tiers: trip.pricing_tiers || [],
     })
     setShowModal(true)
   }
@@ -326,9 +338,19 @@ export default function TripManagement() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-4">
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-500">Duration (Days)</label>
+                  <label className="text-xs font-semibold text-slate-500">Min Duration</label>
+                  <input
+                    type="number"
+                    min="1"
+                    className="rounded-xl border p-3 text-sm outline-none transition focus:border-blue-500"
+                    value={formData.min_duration}
+                    onChange={(e) => setFormData({ ...formData, min_duration: Number(e.target.value) })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-slate-500">Max Duration</label>
                   <input
                     type="number"
                     min="1"
@@ -348,13 +370,13 @@ export default function TripManagement() {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-500">Children Count</label>
+                  <label className="text-xs font-semibold text-slate-500">Concurrent Slots</label>
                   <input
                     type="number"
-                    min="0"
+                    min="1"
                     className="rounded-xl border p-3 text-sm outline-none transition focus:border-blue-500"
-                    value={formData.children}
-                    onChange={(e) => setFormData({ ...formData, children: Number(e.target.value) })}
+                    value={formData.concurrent_slots}
+                    onChange={(e) => setFormData({ ...formData, concurrent_slots: Number(e.target.value) })}
                   />
                 </div>
               </div>
@@ -375,7 +397,7 @@ export default function TripManagement() {
                   </select>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-500">Estimated Budget Scale</label>
+                  <label className="text-xs font-semibold text-slate-500">Budget Scale</label>
                   <select
                     className="rounded-xl border bg-white p-3 text-sm outline-none transition focus:border-blue-500"
                     value={formData.budget_level}
@@ -386,6 +408,104 @@ export default function TripManagement() {
                     <option>High</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-slate-500">Base Price</label>
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    className="rounded-xl border p-3 text-sm outline-none transition focus:border-blue-500"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-slate-500">Discount Members Threshold</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className="rounded-xl border p-3 text-sm outline-none transition focus:border-blue-500"
+                    value={formData.group_discount_threshold}
+                    onChange={(e) => setFormData({ ...formData, group_discount_threshold: Number(e.target.value) })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-slate-500">Group Discount (%)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    className="rounded-xl border p-3 text-sm outline-none transition focus:border-blue-500"
+                    value={formData.group_discount_percent}
+                    onChange={(e) => setFormData({ ...formData, group_discount_percent: Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-xl border p-4 bg-slate-50">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-semibold text-slate-700">Pricing by Member Count</h3>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, pricing_tiers: [...(formData.pricing_tiers || []), { members: 1, price: 0 }] })}
+                    className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold hover:bg-blue-200 transition"
+                  >
+                    + Add Tier
+                  </button>
+                </div>
+                {(formData.pricing_tiers || []).map((tier, index) => (
+                  <div key={index} className="flex items-center gap-3 mb-2">
+                    <div className="flex-1 flex flex-col">
+                      <label className="text-[10px] uppercase font-bold text-slate-400 mb-1">Members</label>
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="Members"
+                        className="w-full rounded-lg border p-2 text-sm outline-none focus:border-blue-500 bg-white"
+                        value={tier.members}
+                        onChange={(e) => {
+                          const updated = [...formData.pricing_tiers]
+                          updated[index].members = Number(e.target.value)
+                          setFormData({ ...formData, pricing_tiers: updated })
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1 flex flex-col">
+                      <label className="text-[10px] uppercase font-bold text-slate-400 mb-1">Total Price</label>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Total Price"
+                        className="w-full rounded-lg border p-2 text-sm outline-none focus:border-blue-500 bg-white"
+                        value={tier.price}
+                        onChange={(e) => {
+                          const updated = [...formData.pricing_tiers]
+                          updated[index].price = Number(e.target.value)
+                          setFormData({ ...formData, pricing_tiers: updated })
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-col justify-end h-full pt-5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = formData.pricing_tiers.filter((_, i) => i !== index)
+                          setFormData({ ...formData, pricing_tiers: updated })
+                        }}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {(formData.pricing_tiers || []).length === 0 && (
+                  <p className="text-xs text-slate-500 italic mt-2">No pricing tiers defined. Base price will be multiplied by member count.</p>
+                )}
               </div>
 
               <button className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 font-medium text-white shadow-sm transition hover:bg-blue-700">
