@@ -209,53 +209,18 @@ export default function Dashboard() {
         tone: 'yellow',
       },
       {
-        label: 'Total Trips',
-        value: summary.trips.length,
-        helper: `${activeTrips} active packages`,
-        icon: MapPinned,
+        label: 'Total AI requests',
+        value: summary.aiRequests.length,
+        helper: `${pendingAiRequests} pending approval`,
+        icon: Sparkles,
         tone: 'cyan',
       },
       {
-        label: 'Total Bookings',
-        value: summary.bookings.length,
-        helper: 'Confirmed and pending orders',
-        icon: ClipboardList,
-        tone: 'emerald',
-      },
-      {
-        label: 'Revenue',
+        label: 'Total Revenue',
         value: currencyFormatter.format(revenue || 0),
         helper: `${summary.payments.length} payment records`,
         icon: Coins,
         tone: 'amber',
-      },
-      {
-        label: 'Complaints',
-        value: summary.complaints.length,
-        helper: 'Active service issues',
-        icon: MessageCircleWarning,
-        tone: 'rose',
-      },
-      {
-        label: 'Reviews',
-        value: summary.reviews.length,
-        helper: 'Customer ratings and feedback',
-        icon: Star,
-        tone: 'cyan',
-      },
-      {
-        label: 'Pending AI Requests',
-        value: pendingAiRequests,
-        helper: 'Awaiting approval or rejection',
-        icon: Sparkles,
-        tone: 'yellow',
-      },
-      {
-        label: 'Unread Notifications',
-        value: unreadNotifications,
-        helper: 'Fresh updates for admins',
-        icon: Bell,
-        tone: 'slate',
       },
     ]
   }, [summary])
@@ -359,13 +324,13 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-3">
             {metrics.map((metric) => (
               <AdminKpiCard key={metric.label} {...metric} />
             ))}
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
+          <div className="grid gap-6 xl:grid-cols-2">
             <AdminChartCard
               eyebrow="Revenue"
               title="Monthly revenue overview"
@@ -405,6 +370,39 @@ export default function Dashboard() {
             </AdminChartCard>
 
             <AdminChartCard
+              eyebrow="Bookings"
+              title="Daily bookings"
+              description="A rolling view of booking activity across the last few days of available data."
+            >
+              <div className="h-80">
+                {bookingsData.length === 0 ? (
+                  <div className="flex h-full items-center justify-center rounded-[24px] border border-dashed border-white/10 bg-white/5 text-sm text-white/45">
+                    No booking history yet.
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={bookingsData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.08)" />
+                      <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                      <Tooltip
+                        contentStyle={{
+                          background: '#09090b',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '16px',
+                          color: '#fff',
+                        }}
+                      />
+                      <Bar dataKey="value" radius={[12, 12, 0, 0]} fill="#38bdf8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </AdminChartCard>
+          </div>
+
+          <div className="grid gap-6 xl:grid-cols-[0.7fr_1.3fr]">
+            <AdminChartCard
               eyebrow="AI approvals"
               title="Pending request queue"
               description="Review the latest AI trip plans that are waiting for admin approval."
@@ -435,39 +433,6 @@ export default function Dashboard() {
                       </div>
                     </div>
                   ))
-                )}
-              </div>
-            </AdminChartCard>
-          </div>
-
-          <div className="grid gap-6 xl:grid-cols-2">
-            <AdminChartCard
-              eyebrow="Bookings"
-              title="Daily bookings"
-              description="A rolling view of booking activity across the last few days of available data."
-            >
-              <div className="h-80">
-                {bookingsData.length === 0 ? (
-                  <div className="flex h-full items-center justify-center rounded-[24px] border border-dashed border-white/10 bg-white/5 text-sm text-white/45">
-                    No booking history yet.
-                  </div>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={bookingsData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.08)" />
-                      <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#cbd5e1', fontSize: 12 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#cbd5e1', fontSize: 12 }} />
-                      <Tooltip
-                        contentStyle={{
-                          background: '#09090b',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '16px',
-                          color: '#fff',
-                        }}
-                      />
-                      <Bar dataKey="value" radius={[12, 12, 0, 0]} fill="#38bdf8" />
-                    </BarChart>
-                  </ResponsiveContainer>
                 )}
               </div>
             </AdminChartCard>
