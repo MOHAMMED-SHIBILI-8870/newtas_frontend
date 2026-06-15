@@ -108,7 +108,7 @@ export default function DriverSidebar({ collapsed, mobileOpen, onClose, onToggle
     })
   }
 
-  const sidebarWidthClass = collapsed ? 'lg:w-24' : 'lg:w-80'
+  const sidebarWidthClass = collapsed ? 'lg:w-24' : 'lg:w-64'
 
   return (
     <>
@@ -122,7 +122,7 @@ export default function DriverSidebar({ collapsed, mobileOpen, onClose, onToggle
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-80 flex-col border-r border-white/10 bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.12),_transparent_30%),linear-gradient(180deg,_#09090b_0%,_#0d0d11_40%,_#09090b_100%)] text-white transition-transform duration-300 lg:static lg:z-auto ${sidebarWidthClass} ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/10 bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.12),_transparent_30%),linear-gradient(180deg,_#09090b_0%,_#0d0d11_40%,_#09090b_100%)] text-white transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:z-30 ${sidebarWidthClass} ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >

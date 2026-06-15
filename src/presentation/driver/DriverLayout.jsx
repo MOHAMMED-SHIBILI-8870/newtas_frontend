@@ -39,7 +39,7 @@ export default function DriverLayout() {
           onLogout={() => void logout({ redirectTo: '/login' })}
         />
 
-        <div className="flex min-h-screen flex-1 flex-col">
+        <div className="flex min-h-screen flex-1 flex-col min-w-0">
           <DriverTopbar
             onMenuToggle={() => setMobileOpen(true)}
             collapsed={collapsed}

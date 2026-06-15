@@ -19,7 +19,11 @@ export default function ProfilePage() {
     const loadBookings = async () => {
       try {
         const myBookings = await fetchMyBookings()
-        setBookings(Array.isArray(myBookings) ? myBookings : [])
+        const bookingsList = Array.isArray(myBookings) ? myBookings : []
+        setBookings(bookingsList)
+        if (bookingsList.length > 0) {
+          setSelectedBooking(String(bookingsList[0].id))
+        }
       } catch (error) {
         console.error('Failed to load bookings for complaints', error)
       }
@@ -29,25 +33,36 @@ export default function ProfilePage() {
 
   const handleComplaintSubmit = async (e) => {
     e.preventDefault()
-    if (!selectedBooking) {
-      toast.error('Please select a booking')
+
+    let bookingIdToSend = Number(selectedBooking)
+    if (!bookingIdToSend && bookings.length > 0) {
+      bookingIdToSend = bookings[0].id
+    }
+
+    if (!bookingIdToSend) {
+      toast.error('You need at least one booking to submit a complaint.')
       return
     }
+
     if (!complaintTitle.trim() || !complaintDescription.trim()) {
-      toast.error('Please enter title and description')
+      toast.error('Please enter subject and description')
       return
     }
     setSubmittingComplaint(true)
     try {
       await createComplaint({
-        booking_id: Number(selectedBooking),
+        booking_id: bookingIdToSend,
         title: complaintTitle,
         description: complaintDescription,
       })
       toast.success('Complaint submitted successfully!')
       setComplaintTitle('')
       setComplaintDescription('')
-      setSelectedBooking('')
+      if (bookings.length > 0) {
+        setSelectedBooking(String(bookings[0].id))
+      } else {
+        setSelectedBooking('')
+      }
     } catch (error) {
       toast.error('Failed to submit complaint')
     } finally {
@@ -133,27 +148,12 @@ export default function ProfilePage() {
         </div>
         <form onSubmit={handleComplaintSubmit} className="p-8 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Select Booking</label>
-            <select
-              value={selectedBooking}
-              onChange={(e) => setSelectedBooking(e.target.value)}
-              className="mt-1 block w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 px-4 text-sm outline-none transition focus:border-cyan-300"
-            >
-              <option value="">-- Choose a booking --</option>
-              {bookings.map((b) => (
-                <option key={b.id} value={b.id}>
-                  Booking #{b.id} ({b.trip?.from || 'Unknown'} → {b.trip?.to || 'Unknown'})
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700">Title</label>
+            <label className="block text-sm font-medium text-slate-700">Subject</label>
             <input
               type="text"
               value={complaintTitle}
               onChange={(e) => setComplaintTitle(e.target.value)}
-              placeholder="Brief summary of your issue"
+              placeholder="Subject of your issue"
               className="mt-1 block w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 px-4 text-sm outline-none transition focus:border-cyan-300"
             />
           </div>

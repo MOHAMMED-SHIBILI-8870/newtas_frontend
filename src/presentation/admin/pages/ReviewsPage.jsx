@@ -103,15 +103,15 @@ export default function ReviewsPage() {
           <select
             value={ratingFilter}
             onChange={(event) => setRatingFilter(event.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+            className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
           >
-            <option value="all">All ratings</option>
-            <option value="5">5 stars</option>
-            <option value="4">4 stars</option>
-            <option value="3">3 stars</option>
-            <option value="2">2 stars</option>
-            <option value="1">1 star</option>
-            <option value="0">Unrated</option>
+            <option value="all" className="bg-zinc-950">All ratings</option>
+            <option value="5" className="bg-zinc-950">5 stars</option>
+            <option value="4" className="bg-zinc-950">4 stars</option>
+            <option value="3" className="bg-zinc-950">3 stars</option>
+            <option value="2" className="bg-zinc-950">2 stars</option>
+            <option value="1" className="bg-zinc-950">1 star</option>
+            <option value="0" className="bg-zinc-950">Unrated</option>
           </select>
         </label>
       </AdminChartCard>
@@ -180,23 +180,23 @@ export default function ReviewsPage() {
               label: 'Customer',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.customer}</p>
-                  <p className="text-sm text-slate-500">{row.tripLabel}</p>
+                  <p className="font-semibold text-white">{row.customer}</p>
+                  <p className="text-sm text-white/55">{row.tripLabel}</p>
                 </div>
               ),
             },
             {
               key: 'rating',
               label: 'Rating',
-              render: (row) => <span className="font-semibold text-slate-950">{row.rating || 'N/A'}</span>,
+              render: (row) => <span className="font-semibold text-yellow-300">{row.rating || 'N/A'}</span>,
             },
             {
               key: 'title',
               label: 'Review',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.title}</p>
-                  <p className="max-w-xl text-sm text-slate-500">{row.comment}</p>
+                  <p className="font-semibold text-white">{row.title}</p>
+                  <p className="max-w-xl text-sm text-white/60">{row.comment}</p>
                 </div>
               ),
             },
@@ -204,16 +204,16 @@ export default function ReviewsPage() {
               key: 'status',
               label: 'Status',
               render: (row) => (
-                <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-slate-600">
+                <span className="inline-flex rounded-full bg-zinc-800 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-white/80">
                   {row.status}
                 </span>
               ),
             },
           ]}
           emptyState={
-            <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
-              <p className="text-sm font-semibold text-slate-950">No reviews match your filters.</p>
-              <p className="mt-2 text-sm text-slate-500">Clear the filter to see every review.</p>
+            <div className="rounded-[24px] border border-dashed border-white/10 bg-zinc-900/40 p-10 text-center">
+              <p className="text-sm font-semibold text-white">No reviews match your filters.</p>
+              <p className="mt-2 text-sm text-white/55">Clear the filter to see every review.</p>
             </div>
           }
         />

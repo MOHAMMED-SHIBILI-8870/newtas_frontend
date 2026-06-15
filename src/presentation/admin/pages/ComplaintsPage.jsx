@@ -114,7 +114,7 @@ export default function ComplaintsPage() {
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+            className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-400/80"
           >
             <option value="all">All statuses</option>
             <option value="open">Open</option>
@@ -160,8 +160,8 @@ export default function ComplaintsPage() {
               label: 'Complaint',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.title}</p>
-                  <p className="text-sm text-slate-500">{row.category}</p>
+                  <p className="font-semibold text-white">{row.title}</p>
+                  <p className="text-sm text-white/60">{row.category}</p>
                 </div>
               ),
             },
@@ -170,27 +170,27 @@ export default function ComplaintsPage() {
               label: 'Customer',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.customer}</p>
-                  <p className="text-sm text-slate-500">{row.assignee}</p>
+                  <p className="font-semibold text-white">{row.customer}</p>
+                  <p className="text-sm text-yellow-300">{row.assignee}</p>
                 </div>
               ),
             },
             {
               key: 'priority',
               label: 'Priority',
-              render: (row) => <span className="font-semibold text-slate-950">{row.priority}</span>,
+              render: (row) => <span className="font-semibold text-white/80">{row.priority}</span>,
             },
             {
               key: 'status',
               label: 'Status',
               render: (row) => (
                 <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] ${
+                  className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] ring-1 ${
                     row.status === 'resolved'
-                      ? 'bg-emerald-50 text-emerald-700'
+                      ? 'bg-emerald-400/10 text-emerald-300 ring-emerald-400/20'
                       : row.status === 'in_progress'
-                        ? 'bg-yellow-50 text-yellow-700'
-                        : 'bg-rose-50 text-rose-700'
+                        ? 'bg-yellow-400/10 text-yellow-300 ring-yellow-400/20'
+                        : 'bg-rose-400/10 text-rose-300 ring-rose-400/20'
                   }`}
                 >
                   {row.status}
@@ -206,7 +206,7 @@ export default function ComplaintsPage() {
                   <button
                     type="button"
                     onClick={() => void handleAssign(row)}
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
                   >
                     <Handshake className="h-3.5 w-3.5" />
                     Assign
@@ -215,7 +215,7 @@ export default function ComplaintsPage() {
                     type="button"
                     onClick={() => void handleResolve(row)}
                     disabled={row.status === 'resolved'}
-                    className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-3 py-2 text-xs font-semibold text-white transition hover:bg-cyan-600 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="inline-flex items-center gap-2 rounded-full border border-yellow-400/20 bg-yellow-400/10 px-3 py-2 text-xs font-semibold text-yellow-300 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     Resolve
@@ -225,9 +225,9 @@ export default function ComplaintsPage() {
             },
           ]}
           emptyState={
-            <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
-              <p className="text-sm font-semibold text-slate-950">No complaints found.</p>
-              <p className="mt-2 text-sm text-slate-500">Clear filters to see all complaint records.</p>
+            <div className="rounded-[24px] border border-dashed border-white/10 bg-zinc-950/40 p-10 text-center">
+              <p className="text-sm font-semibold text-white">No complaints found.</p>
+              <p className="mt-2 text-sm text-white/60">Clear filters to see all complaint records.</p>
             </div>
           }
         />

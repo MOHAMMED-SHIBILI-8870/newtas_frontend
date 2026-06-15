@@ -58,13 +58,13 @@ export default function RolesPage() {
             {
               key: 'role',
               label: 'Role',
-              render: (row) => <span className="font-semibold text-slate-950">{row.role}</span>,
+              render: (row) => <span className="font-semibold text-white">{row.role}</span>,
             },
             {
               key: 'permissionCount',
               label: 'Permissions',
               render: (row) => (
-                <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-slate-600">
+                <span className="inline-flex rounded-full bg-zinc-800 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-white/80">
                   {row.permissionCount === 'all' ? 'All permissions' : `${row.permissionCount} permissions`}
                 </span>
               ),
@@ -77,7 +77,7 @@ export default function RolesPage() {
                   {row.permissions.map((permission) => (
                     <span
                       key={permission}
-                      className="rounded-full bg-yellow-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-yellow-700"
+                      className="rounded-full bg-yellow-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-yellow-350"
                     >
                       {permission}
                     </span>
@@ -87,7 +87,7 @@ export default function RolesPage() {
             },
           ]}
           loading={false}
-          emptyState={<div className="px-6 py-12 text-center text-slate-500">No roles configured.</div>}
+          emptyState={<div className="px-6 py-12 text-center text-white/45">No roles configured.</div>}
         />
       </AdminChartCard>
     </div>

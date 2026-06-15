@@ -52,14 +52,14 @@ export default function PaymentPage() {
         description="Review all bookings, customer details, and booking status from the admin workspace."
       />
 
-      <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-[28px] border border-white/10 bg-zinc-950/60 p-4 shadow-xl">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by customer or destination"
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-cyan-300"
+            placeholder="Search by customer or destination..."
+            className="w-full rounded-2xl border border-white/10 bg-black py-3 pl-11 pr-4 text-sm text-white placeholder-white/30 outline-none transition focus:border-yellow-400/80"
           />
         </div>
       </div>
@@ -72,10 +72,10 @@ export default function PaymentPage() {
           description="Bookings will appear here once users begin confirming packages."
         />
       ) : (
-        <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-[32px] border border-white/10 bg-zinc-950/60 backdrop-blur-md shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-slate-50 text-xs uppercase tracking-[0.25em] text-slate-400">
+              <thead className="bg-zinc-900/80 text-xs uppercase tracking-[0.25em] text-zinc-400 border-b border-white/10">
                 <tr>
                   <th className="px-6 py-4">Booking</th>
                   <th className="px-6 py-4">Customer</th>
@@ -83,24 +83,24 @@ export default function PaymentPage() {
                   <th className="px-6 py-4">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-white/5 bg-transparent">
                 {filteredBookings.map((booking) => (
-                  <tr key={booking.id} className="transition hover:bg-slate-50/60">
+                  <tr key={booking.id} className="transition hover:bg-white/5">
                     <td className="px-6 py-4">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-slate-600">
-                        <ClipboardList className="h-3.5 w-3.5" />
+                      <div className="inline-flex items-center gap-2 rounded-full bg-zinc-800 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-white/80">
+                        <ClipboardList className="h-3.5 w-3.5 text-yellow-300" />
                         #{booking.id}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-950">{booking.user?.name || booking.user?.full_name || 'Unknown user'}</div>
-                      <div className="text-sm text-slate-500">{booking.user?.email || 'No email found'}</div>
+                      <div className="font-semibold text-white">{booking.user?.name || booking.user?.full_name || 'Unknown user'}</div>
+                      <div className="text-sm text-white/55">{booking.user?.email || 'No email found'}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-950">
+                      <div className="font-semibold text-white">
                         {booking.trip?.from || 'Unknown'} → {booking.trip?.to || 'Destination'}
                       </div>
-                      <div className="text-sm text-slate-500">
+                      <div className="text-sm text-white/55">
                         {booking.trip?.duration || 0} days, ${Number(booking.trip?.price || 0).toFixed(0)}
                       </div>
                     </td>

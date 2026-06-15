@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Download, FileSpreadsheet, Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 
@@ -120,6 +121,9 @@ export default function DataTable({
   loading = false,
   className = '',
 }) {
+  const { pathname } = useLocation()
+  const isDark = pathname.startsWith('/admin') || pathname.startsWith('/driver')
+
   const [searchTerm, setSearchTerm] = useState('')
   const [pageSize, setPageSize] = useState(initialPageSize)
   const [page, setPage] = useState(1)
@@ -213,11 +217,24 @@ export default function DataTable({
   const endRecord = Math.min(currentPage * pageSize, preparedRows.length)
 
   return (
-    <section className={`rounded-[32px] border border-slate-200 bg-white shadow-sm ${className}`.trim()}>
-      <div className="flex flex-col gap-5 border-b border-slate-200 p-6 lg:flex-row lg:items-end lg:justify-between">
+    <section className={isDark
+      ? `rounded-[32px] border border-white/10 bg-zinc-950/60 text-white backdrop-blur-md shadow-xl ${className}`.trim()
+      : `rounded-[32px] border border-slate-200 bg-white shadow-sm ${className}`.trim()
+    }>
+      <div className={`flex flex-col gap-5 border-b p-6 lg:flex-row lg:items-end lg:justify-between ${
+        isDark ? 'border-white/10' : 'border-slate-200'
+      }`}>
         <div>
-          {title ? <p className="text-xs font-bold uppercase tracking-[0.35em] text-cyan-600">{title}</p> : null}
-          {description ? <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">{description}</p> : null}
+          {title ? (
+            <p className={`text-xs font-bold uppercase tracking-[0.35em] ${isDark ? 'text-yellow-300' : 'text-cyan-600'}`}>
+              {title}
+            </p>
+          ) : null}
+          {description ? (
+            <p className={`mt-2 max-w-3xl text-sm leading-6 ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
+              {description}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -225,7 +242,10 @@ export default function DataTable({
           <button
             type="button"
             onClick={handleExportCsv}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
+            className={isDark
+              ? "inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+              : "inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
+            }
           >
             <Download className="h-4 w-4" />
             CSV
@@ -233,7 +253,10 @@ export default function DataTable({
           <button
             type="button"
             onClick={handleExportExcel}
-            className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-600"
+            className={isDark
+              ? "inline-flex items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-yellow-300"
+              : "inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-600"
+            }
           >
             <FileSpreadsheet className="h-4 w-4" />
             Excel
@@ -244,7 +267,7 @@ export default function DataTable({
       <div className="space-y-4 p-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className={`absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 ${isDark ? 'text-white/40' : 'text-slate-400'}`} />
             <input
               value={searchTerm}
               onChange={(event) => {
@@ -252,7 +275,10 @@ export default function DataTable({
                 setSearchTerm(event.target.value)
               }}
               placeholder={searchPlaceholder}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-cyan-300"
+              className={isDark
+                ? "w-full rounded-2xl border border-white/10 bg-black py-3 pl-11 pr-4 text-sm text-white outline-none transition focus:border-yellow-400/80"
+                : "w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-cyan-300"
+              }
             />
           </div>
 
@@ -261,7 +287,7 @@ export default function DataTable({
               {filters.map((filter) => (
                 <label key={filter.key} className="min-w-[160px]">
                   {filter.label ? (
-                    <span className="mb-2 block text-[11px] font-bold uppercase tracking-[0.3em] text-slate-400">
+                    <span className={`mb-2 block text-[11px] font-bold uppercase tracking-[0.3em] ${isDark ? 'text-white/40' : 'text-slate-400'}`}>
                       {filter.label}
                     </span>
                   ) : null}
@@ -271,10 +297,13 @@ export default function DataTable({
                       setPage(1)
                       filter.onChange?.(event.target.value)
                     }}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-cyan-300"
+                    className={isDark
+                      ? "w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-400/80"
+                      : "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-cyan-300"
+                    }
                   >
                     {filter.options.map((option) => (
-                      <option key={option.value} value={option.value}>
+                      <option key={option.value} value={option.value} className={isDark ? "bg-black text-white" : ""}>
                         {option.label}
                       </option>
                     ))}
@@ -285,10 +314,10 @@ export default function DataTable({
           ) : null}
         </div>
 
-        <div className="overflow-hidden rounded-[28px] border border-slate-200">
+        <div className={`overflow-hidden rounded-[28px] border ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-slate-50 text-xs uppercase tracking-[0.25em] text-slate-400">
+              <thead className={`${isDark ? 'bg-zinc-900/80 text-zinc-400 border-b border-white/10' : 'bg-slate-50 text-slate-400'} text-xs uppercase tracking-[0.25em]`}>
                 <tr>
                   {columns.map((column) => (
                     <th
@@ -304,10 +333,10 @@ export default function DataTable({
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className={`divide-y ${isDark ? 'divide-white/5 bg-transparent' : 'divide-slate-100 bg-white'}`}>
                 {loading ? (
                   <tr>
-                    <td colSpan={columns.length} className="px-6 py-16 text-center text-sm text-slate-500">
+                    <td colSpan={columns.length} className={`px-6 py-16 text-center text-sm ${isDark ? 'text-white/45' : 'text-slate-500'}`}>
                       Loading records...
                     </td>
                   </tr>
@@ -316,8 +345,8 @@ export default function DataTable({
                     <td colSpan={columns.length} className="px-6 py-16">
                       {emptyState || (
                         <div className="text-center">
-                          <p className="text-sm font-semibold text-slate-900">No records found</p>
-                          <p className="mt-2 text-sm text-slate-500">
+                          <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>No records found</p>
+                          <p className={`mt-2 text-sm ${isDark ? 'text-white/55' : 'text-slate-500'}`}>
                             Try a different search term or adjust the filters to see more results.
                           </p>
                         </div>
@@ -326,7 +355,10 @@ export default function DataTable({
                   </tr>
                 ) : (
                   paginatedRows.map((row) => (
-                    <tr key={row[rowKey] ?? row.id ?? JSON.stringify(row)} className="transition hover:bg-slate-50/70">
+                    <tr
+                      key={row[rowKey] ?? row.id ?? JSON.stringify(row)}
+                      className={`transition ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50/70'}`}
+                    >
                       {columns.map((column) => {
                         const value = column.render
                           ? column.render(row)
@@ -346,15 +378,17 @@ export default function DataTable({
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-sm text-slate-500">
-            Showing <span className="font-semibold text-slate-900">{startRecord}</span> to{' '}
-            <span className="font-semibold text-slate-900">{endRecord}</span> of{' '}
-            <span className="font-semibold text-slate-900">{preparedRows.length}</span> records
+        <div className={`flex flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between ${
+          isDark ? 'border-white/10' : 'border-slate-200'
+        }`}>
+          <div className={`text-sm ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
+            Showing <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{startRecord}</span> to{' '}
+            <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{endRecord}</span> of{' '}
+            <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{preparedRows.length}</span> records
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 text-sm text-slate-500">
+            <label className={`flex items-center gap-2 text-sm ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
               Rows per page
               <select
                 value={pageSize}
@@ -362,10 +396,13 @@ export default function DataTable({
                   setPage(1)
                   setPageSize(Number(event.target.value))
                 }}
-                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-cyan-300"
+                className={isDark
+                  ? "rounded-full border border-white/10 bg-black px-3 py-2 text-sm text-white outline-none transition focus:border-yellow-400/80"
+                  : "rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-cyan-300"
+                }
               >
                 {pageSizes.map((size) => (
-                  <option key={size} value={size}>
+                  <option key={size} value={size} className={isDark ? "bg-black text-white" : ""}>
                     {size}
                   </option>
                 ))}
@@ -377,19 +414,25 @@ export default function DataTable({
                 type="button"
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
                 disabled={currentPage === 1}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-cyan-200 hover:text-cyan-700 disabled:cursor-not-allowed disabled:opacity-40"
+                className={isDark
+                  ? "inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-white/85 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  : "inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-cyan-200 hover:text-cyan-700 disabled:cursor-not-allowed disabled:opacity-40"
+                }
                 aria-label="Previous page"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <span className="min-w-20 text-center text-sm font-semibold text-slate-700">
+              <span className={`min-w-20 text-center text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                 {currentPage} / {totalPages}
               </span>
               <button
                 type="button"
                 onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
                 disabled={currentPage === totalPages}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-cyan-200 hover:text-cyan-700 disabled:cursor-not-allowed disabled:opacity-40"
+                className={isDark
+                  ? "inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-white/85 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  : "inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-cyan-200 hover:text-cyan-700 disabled:cursor-not-allowed disabled:opacity-40"
+                }
                 aria-label="Next page"
               >
                 <ChevronRight className="h-4 w-4" />

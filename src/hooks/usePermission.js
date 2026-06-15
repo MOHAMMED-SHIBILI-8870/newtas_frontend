@@ -31,16 +31,19 @@ export const usePermission = () => {
   const hasAnyPermission = (requiredPermissions = []) =>
     requiredPermissions.some((permission) => hasPermission(permission))
 
+  const userRole = String(auth?.user?.role || '').toLowerCase()
+
   return {
     ...auth,
+    role: userRole,
     permissions,
     hasPermission,
     hasAllPermissions,
     hasAnyPermission,
-    isAdmin: auth?.user?.role === 'admin',
-    isSupportAgent: auth?.user?.role === 'supportagent',
-    isGuide: auth?.user?.role === 'guide',
-    isAgency: auth?.user?.role === 'agency',
-    isDriver: auth?.user?.role === 'driver',
+    isAdmin: userRole === 'admin',
+    isSupportAgent: userRole === 'supportagent',
+    isGuide: userRole === 'guide',
+    isAgency: userRole === 'agency',
+    isDriver: userRole === 'driver',
   }
 }

@@ -39,7 +39,7 @@ export default function AdminLayout() {
           onLogout={() => void logout({ redirectTo: '/login' })}
         />
 
-        <div className="flex min-h-screen flex-1 flex-col">
+        <div className="flex min-h-screen flex-1 flex-col min-w-0">
           <AdminTopbar
             onMenuToggle={() => setMobileOpen(true)}
             collapsed={collapsed}

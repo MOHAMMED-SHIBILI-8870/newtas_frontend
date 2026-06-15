@@ -81,7 +81,17 @@ export default function PaymentsPage() {
   const filteredRows = useMemo(
     () =>
       rows.filter((row) => {
-        const matchesStatus = statusFilter === 'all' || row.status === statusFilter
+        let matchesStatus = false
+        if (statusFilter === 'all') {
+          matchesStatus = true
+        } else if (statusFilter === 'paid') {
+          matchesStatus = ['paid', 'success', 'completed', 'confirmed'].includes(row.status)
+        } else if (statusFilter === 'pending') {
+          matchesStatus = ['pending', 'processing', 'pending_payment'].includes(row.status)
+        } else {
+          matchesStatus = row.status === statusFilter
+        }
+
         const matchesGateway = gatewayFilter === 'all' || row.gateway === gatewayFilter
         return matchesStatus && matchesGateway
       }),
@@ -89,12 +99,12 @@ export default function PaymentsPage() {
   )
 
   const totalRevenue = rows.reduce((sum, row) => {
-    const isSuccessful = ['paid', 'success', 'completed'].includes(row.status)
+    const isSuccessful = ['paid', 'success', 'completed', 'confirmed'].includes(row.status)
     return isSuccessful ? sum + Number(row.amount || 0) : sum
   }, 0)
 
-  const paidCount = rows.filter((row) => ['paid', 'success', 'completed'].includes(row.status)).length
-  const pendingCount = rows.filter((row) => ['pending', 'processing'].includes(row.status)).length
+  const paidCount = rows.filter((row) => ['paid', 'success', 'completed', 'confirmed'].includes(row.status)).length
+  const pendingCount = rows.filter((row) => ['pending', 'processing', 'pending_payment'].includes(row.status)).length
   const refundedCount = rows.filter((row) => row.status === 'refunded').length
 
   const handleInvoice = async (payment) => {
@@ -192,15 +202,13 @@ export default function PaymentsPage() {
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+              className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-400/80"
             >
-              <option value="all">All statuses</option>
-              <option value="pending">Pending</option>
-              <option value="paid">Paid</option>
-              <option value="success">Success</option>
-              <option value="processing">Processing</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
+              <option value="all" className="bg-black text-white">All statuses</option>
+              <option value="pending" className="bg-black text-white">Pending</option>
+              <option value="paid" className="bg-black text-white">Paid</option>
+              <option value="failed" className="bg-black text-white">Failed</option>
+              <option value="refunded" className="bg-black text-white">Refunded</option>
             </select>
           </label>
 
@@ -211,10 +219,10 @@ export default function PaymentsPage() {
             <select
               value={gatewayFilter}
               onChange={(event) => setGatewayFilter(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+              className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-400/80"
             >
               {gatewayOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value} className="bg-black text-white">
                   {option.label}
                 </option>
               ))}
@@ -247,8 +255,6 @@ export default function PaymentsPage() {
                 { label: 'All statuses', value: 'all' },
                 { label: 'Pending', value: 'pending' },
                 { label: 'Paid', value: 'paid' },
-                { label: 'Success', value: 'success' },
-                { label: 'Processing', value: 'processing' },
                 { label: 'Failed', value: 'failed' },
                 { label: 'Refunded', value: 'refunded' },
               ],
@@ -267,8 +273,8 @@ export default function PaymentsPage() {
               label: 'Payment',
               render: (row) => (
                 <div className="space-y-1">
-                  <p className="font-semibold text-slate-950">#{row.id}</p>
-                  <p className="text-xs text-slate-500">Reference #{row.reference || row.payment_reference || row.order_id || row.id}</p>
+                  <p className="font-semibold text-white">#{row.id}</p>
+                  <p className="text-xs text-white/45">Reference #{row.reference || row.payment_reference || row.order_id || row.id}</p>
                 </div>
               ),
             },
@@ -277,8 +283,8 @@ export default function PaymentsPage() {
               label: 'Customer',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.customerLabel}</p>
-                  <p className="text-sm text-slate-500">{row.user?.email || row.email || 'No email available'}</p>
+                  <p className="font-semibold text-white">{row.customerLabel}</p>
+                  <p className="text-sm text-white/55">{row.user?.email || row.email || 'No email available'}</p>
                 </div>
               ),
             },
@@ -287,21 +293,21 @@ export default function PaymentsPage() {
               label: 'Trip',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.tripLabel}</p>
-                  <p className="text-sm text-slate-500">{row.trip?.duration || row.duration || 0} days</p>
+                  <p className="font-semibold text-white">{row.tripLabel}</p>
+                  <p className="text-sm text-white/55">{row.trip?.duration || row.duration || 0} days</p>
                 </div>
               ),
             },
             {
               key: 'amount',
               label: 'Amount',
-              render: (row) => <span className="font-semibold text-slate-950">{currencyFormatter.format(row.amount || 0)}</span>,
+              render: (row) => <span className="font-semibold text-yellow-300">{currencyFormatter.format(row.amount || 0)}</span>,
             },
             {
               key: 'gateway',
               label: 'Gateway',
               render: (row) => (
-                <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-slate-600">
+                <span className="inline-flex rounded-full bg-zinc-800 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-white/80">
                   {String(row.gateway || 'manual').toUpperCase()}
                 </span>
               ),
@@ -309,21 +315,29 @@ export default function PaymentsPage() {
             {
               key: 'status',
               label: 'Status',
-              render: (row) => (
-                <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] ${
-                    row.status === 'paid' || row.status === 'success' || row.status === 'completed'
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : row.status === 'refunded'
-                        ? 'bg-amber-50 text-amber-700'
-                        : row.status === 'failed'
-                          ? 'bg-rose-50 text-rose-700'
-                          : 'bg-slate-100 text-slate-600'
-                  }`}
-                >
-                  {row.status}
-                </span>
-              ),
+              render: (row) => {
+                const isPaid = row.status === 'paid' || row.status === 'success' || row.status === 'completed' || row.status === 'confirmed';
+                const isRefunded = row.status === 'refunded';
+                const isFailed = row.status === 'failed';
+                const isPending = row.status === 'pending' || row.status === 'processing' || row.status === 'pending_payment';
+                return (
+                  <span
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] border ${
+                      isPaid
+                        ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
+                        : isRefunded
+                          ? 'bg-rose-500/10 text-rose-300 border-rose-500/20'
+                          : isFailed
+                            ? 'bg-rose-600/10 text-rose-400 border-rose-600/20'
+                            : isPending
+                              ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
+                              : 'bg-zinc-800 text-zinc-300 border-white/5'
+                    }`}
+                  >
+                    {row.status.replace('_', ' ')}
+                  </span>
+                )
+              },
             },
             {
               key: 'actions',
@@ -334,16 +348,16 @@ export default function PaymentsPage() {
                   <button
                     type="button"
                     onClick={() => void handleInvoice(row)}
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/10 hover:border-yellow-400/50"
                   >
-                    <Download className="h-3.5 w-3.5" />
+                    <Download className="h-3.5 w-3.5 text-yellow-305" />
                     Invoice
                   </button>
                   <button
                     type="button"
                     onClick={() => void handleRefund(row)}
                     disabled={['refunded', 'failed', 'pending'].includes(row.status)}
-                    className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-3 py-2 text-xs font-semibold text-white transition hover:bg-cyan-600 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                     Refund
@@ -353,9 +367,9 @@ export default function PaymentsPage() {
             },
           ]}
           emptyState={
-            <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
-              <p className="text-sm font-semibold text-slate-950">No payment records match your filters.</p>
-              <p className="mt-2 text-sm text-slate-500">Try clearing the gateway or status filters.</p>
+            <div className="rounded-[24px] border border-dashed border-white/10 bg-zinc-900/40 p-10 text-center">
+              <p className="text-sm font-semibold text-white">No payment records match your filters.</p>
+              <p className="mt-2 text-sm text-white/55">Try clearing the gateway or status filters.</p>
             </div>
           }
           loading={loading}

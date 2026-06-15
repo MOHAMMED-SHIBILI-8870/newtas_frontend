@@ -19,7 +19,9 @@ const ProtectedRoute = ({ children, roles = [], permissions = [], requireAllPerm
   }
 
   if (roles.length > 0) {
-    if (!roles.includes(role || (isAdmin ? 'admin' : 'user'))) {
+    const userRole = String(role || (isAdmin ? 'admin' : 'user')).toLowerCase()
+    const allowedRoles = roles.map((r) => String(r || '').toLowerCase())
+    if (!allowedRoles.includes(userRole)) {
       return <Navigate to="/unauthorized" replace />
     }
   }

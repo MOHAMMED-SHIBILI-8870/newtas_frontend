@@ -208,13 +208,13 @@ export default function VehiclesPage() {
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+              className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
             >
-              <option value="all">All statuses</option>
-              <option value="active">Active</option>
-              <option value="idle">Idle</option>
-              <option value="maintenance">Maintenance</option>
-              <option value="inactive">Inactive</option>
+              <option value="all" className="bg-zinc-950">All statuses</option>
+              <option value="active" className="bg-zinc-950">Active</option>
+              <option value="idle" className="bg-zinc-950">Idle</option>
+              <option value="maintenance" className="bg-zinc-950">Maintenance</option>
+              <option value="inactive" className="bg-zinc-950">Inactive</option>
             </select>
           </label>
 
@@ -223,10 +223,10 @@ export default function VehiclesPage() {
             <select
               value={typeFilter}
               onChange={(event) => setTypeFilter(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+              className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
             >
               {typeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value} className="bg-zinc-950">
                   {option.label}
                 </option>
               ))}
@@ -278,8 +278,8 @@ export default function VehiclesPage() {
               label: 'Vehicle',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.name}</p>
-                  <p className="text-sm text-slate-500">{row.registration_number}</p>
+                  <p className="font-semibold text-white">{row.name}</p>
+                  <p className="text-sm text-white/55">{row.registration_number}</p>
                 </div>
               ),
             },
@@ -288,32 +288,36 @@ export default function VehiclesPage() {
               label: 'Assigned Driver',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.driver_name}</p>
-                  <p className="text-sm text-slate-500">{row.capacity} seats</p>
+                  <p className="font-semibold text-white">{row.driver_name}</p>
+                  <p className="text-sm text-white/55">{row.capacity} seats</p>
                 </div>
               ),
             },
             {
               key: 'type',
               label: 'Type',
-              render: (row) => <span className="font-semibold text-slate-950">{row.type}</span>,
+              render: (row) => <span className="font-semibold text-white">{row.type}</span>,
             },
             {
               key: 'status',
               label: 'Status',
-              render: (row) => (
-                <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] ${
-                    row.status === 'active'
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : row.status === 'maintenance'
-                        ? 'bg-amber-50 text-amber-700'
-                        : 'bg-slate-100 text-slate-600'
-                  }`}
-                >
-                  {row.status}
-                </span>
-              ),
+              render: (row) => {
+                const isActive = row.status === 'active';
+                const isMaintenance = row.status === 'maintenance';
+                return (
+                  <span
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] border ${
+                      isActive
+                        ? 'bg-emerald-400/10 text-emerald-300 border-emerald-450/20'
+                        : isMaintenance
+                          ? 'bg-amber-400/10 text-amber-300 border-amber-450/20'
+                          : 'bg-zinc-800 text-zinc-300 border border-white/5'
+                    }`}
+                  >
+                    {row.status}
+                  </span>
+                )
+              },
             },
             {
               key: 'actions',
@@ -324,15 +328,15 @@ export default function VehiclesPage() {
                   <button
                     type="button"
                     onClick={() => openEdit(row)}
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/10 hover:border-yellow-400/50"
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <Pencil className="h-3.5 w-3.5 text-yellow-300" />
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => void handleAssign(row)}
-                    className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-3 py-2 text-xs font-semibold text-white transition hover:bg-cyan-600"
+                    className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-yellow-350"
                   >
                     <UserPlus className="h-3.5 w-3.5" />
                     Assign
@@ -340,7 +344,7 @@ export default function VehiclesPage() {
                   <button
                     type="button"
                     onClick={() => void handleDelete(row)}
-                    className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+                    className="inline-flex items-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-350 transition hover:bg-rose-500/20"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Delete
@@ -350,9 +354,9 @@ export default function VehiclesPage() {
             },
           ]}
           emptyState={
-            <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
-              <p className="text-sm font-semibold text-slate-950">No vehicles match your filters.</p>
-              <p className="mt-2 text-sm text-slate-500">Add a new vehicle or clear the filters.</p>
+            <div className="rounded-[24px] border border-dashed border-white/10 bg-zinc-900/40 p-10 text-center">
+              <p className="text-sm font-semibold text-white">No vehicles match your filters.</p>
+              <p className="mt-2 text-sm text-white/55">Add a new vehicle or clear the filters.</p>
             </div>
           }
         />
@@ -427,7 +431,7 @@ export default function VehiclesPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {submitting ? 'Saving...' : 'Save vehicle'}
                 </button>
@@ -447,7 +451,7 @@ const Field = ({ label, value, onChange, type = 'text' }) => (
       type={type}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300 placeholder-white/30"
     />
   </label>
 )
@@ -458,10 +462,10 @@ const SelectField = ({ label, value, onChange, options }) => (
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
     >
       {options.map((option) => (
-        <option key={option} value={option}>
+        <option key={option} value={option} className="bg-zinc-950">
           {option}
         </option>
       ))}

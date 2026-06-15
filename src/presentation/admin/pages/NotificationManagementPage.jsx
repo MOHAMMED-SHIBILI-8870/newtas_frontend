@@ -135,19 +135,19 @@ export default function NotificationManagementPage() {
         description="Review every system notification, including user bookings and AI approvals."
       />
 
-      <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-[28px] border border-white/10 bg-zinc-950/60 p-4 shadow-xl">
 
         <div className="relative">
 
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
 
           <input
             value={search}
             onChange={(event) =>
               setSearch(event.target.value)
             }
-            placeholder="Search notifications"
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-cyan-300"
+            placeholder="Search notifications..."
+            className="w-full rounded-2xl border border-white/10 bg-black py-3 pl-11 pr-4 text-sm text-white placeholder-white/30 outline-none transition focus:border-yellow-400/80"
           />
 
         </div>
@@ -173,9 +173,9 @@ export default function NotificationManagementPage() {
 
             <article
               key={notification.id}
-              className={`rounded-[28px] border p-6 shadow-sm ${notification.is_read
-                ? 'border-slate-200 bg-white'
-                : 'border-cyan-200 bg-cyan-50/50'
+              className={`rounded-[28px] border p-6 shadow-xl ${notification.is_read
+                ? 'border-white/10 bg-zinc-900/40 text-white'
+                : 'border-yellow-400/25 bg-yellow-400/5 text-white'
                 }`}
             >
 
@@ -209,16 +209,16 @@ export default function NotificationManagementPage() {
 
                   </div>
 
-                  <h3 className="text-2xl font-black text-slate-950">
+                  <h3 className="text-2xl font-black text-white">
                     {notification.title ||
                       'Notification'}
                   </h3>
 
-                  <p className="max-w-4xl text-sm leading-6 text-slate-600">
+                  <p className="max-w-4xl text-sm leading-6 text-white/70">
                     {notification.message}
                   </p>
 
-                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">
+                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/45">
 
                     {notification.created_at
                       ? new Date(
@@ -239,10 +239,10 @@ export default function NotificationManagementPage() {
                         notification.id,
                       )
                     }
-                    className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-600"
+                    className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-yellow-300"
                   >
 
-                    <CheckCheck className="h-4 w-4" />
+                    <CheckCheck className="h-4 w-4 text-slate-950" />
 
                     Mark as read
 

@@ -206,7 +206,7 @@ export default function OffersPage() {
             value={couponCode}
             onChange={(event) => setCouponCode(event.target.value)}
             placeholder="Coupon code"
-            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+            className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-400/80"
           />
           <input
             value={couponAmount}
@@ -214,7 +214,7 @@ export default function OffersPage() {
             placeholder="Amount (optional)"
             type="number"
             min="0"
-            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+            className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-400/80"
           />
           <button
             type="button"
@@ -260,33 +260,35 @@ export default function OffersPage() {
               label: 'Offer',
               render: (row) => (
                 <div>
-                  <p className="font-semibold text-slate-950">{row.title}</p>
-                  <p className="text-sm text-slate-500">{row.code}</p>
+                  <p className="font-semibold text-white">{row.title}</p>
+                  <p className="text-sm text-yellow-300">{row.code}</p>
                 </div>
               ),
             },
             {
               key: 'discount_percent',
               label: 'Discount',
-              render: (row) => <span className="font-semibold text-slate-950">{row.discount_percent}%</span>,
+              render: (row) => <span className="font-semibold text-white">{row.discount_percent}%</span>,
             },
             {
               key: 'starts_at',
               label: 'Starts',
-              render: (row) => <span className="font-semibold text-slate-950">{row.starts_at || 'N/A'}</span>,
+              render: (row) => <span className="font-semibold text-white/80">{row.starts_at || 'N/A'}</span>,
             },
             {
               key: 'ends_at',
               label: 'Ends',
-              render: (row) => <span className="font-semibold text-slate-950">{row.ends_at || 'N/A'}</span>,
+              render: (row) => <span className="font-semibold text-white/80">{row.ends_at || 'N/A'}</span>,
             },
             {
               key: 'status',
               label: 'Status',
               render: (row) => (
                 <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] ${
-                    row.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                  className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] ring-1 ${
+                    row.status === 'active'
+                      ? 'bg-emerald-400/10 text-emerald-300 ring-emerald-400/20'
+                      : 'bg-zinc-800 text-zinc-300 ring-zinc-700'
                   }`}
                 >
                   {row.status}
@@ -302,7 +304,7 @@ export default function OffersPage() {
                   <button
                     type="button"
                     onClick={() => openEdit(row)}
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
                   >
                     <Pencil className="h-3.5 w-3.5" />
                     Edit
@@ -310,7 +312,7 @@ export default function OffersPage() {
                   <button
                     type="button"
                     onClick={() => void handleDelete(row)}
-                    className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+                    className="inline-flex items-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Delete
@@ -320,9 +322,9 @@ export default function OffersPage() {
             },
           ]}
           emptyState={
-            <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
-              <p className="text-sm font-semibold text-slate-950">No offers match your filters.</p>
-              <p className="mt-2 text-sm text-slate-500">Create a new offer or clear the filter.</p>
+            <div className="rounded-[24px] border border-dashed border-white/10 bg-zinc-950/40 p-10 text-center">
+              <p className="text-sm font-semibold text-white">No offers match your filters.</p>
+              <p className="mt-2 text-sm text-white/60">Create a new offer or clear the filter.</p>
             </div>
           }
         />
@@ -378,11 +380,12 @@ export default function OffersPage() {
                 />
               </div>
 
-              <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80">
+              <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white/80">
                 <input
                   type="checkbox"
                   checked={form.active}
                   onChange={(event) => setForm((current) => ({ ...current, active: event.target.checked }))}
+                  className="rounded border-white/10 bg-black text-yellow-400 focus:ring-0 focus:ring-offset-0"
                 />
                 Active
               </label>
@@ -418,7 +421,7 @@ const Field = ({ label, value, onChange, type = 'text' }) => (
       type={type}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-300"
+      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none transition focus:border-yellow-400/80"
     />
   </label>
 )

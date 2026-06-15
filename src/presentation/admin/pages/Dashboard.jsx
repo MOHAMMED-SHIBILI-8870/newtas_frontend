@@ -179,7 +179,7 @@ export default function Dashboard() {
 
     const paidPayments = summary.payments.filter((payment) => {
       const status = String(payment?.status || '').toLowerCase()
-      return ['paid', 'success', 'completed'].includes(status)
+      return ['paid', 'success', 'completed', 'confirmed'].includes(status)
     })
 
     const revenueFromPayments = paidPayments.reduce(
