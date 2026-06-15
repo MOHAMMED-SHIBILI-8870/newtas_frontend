@@ -40,6 +40,17 @@ import GuideReviewsPage from './presentation/user/pages/GuideReviewsPage'
 import SupportComplaintsPage from './presentation/user/pages/SupportComplaintsPage'
 import SupportHub from './presentation/admin/pages/SupportHub'
 
+import DriverLayout from './presentation/driver/DriverLayout'
+import DriverDashboard from './presentation/driver/pages/Dashboard'
+import DriverTrips from './presentation/driver/pages/Trips'
+import DriverTripDetails from './presentation/driver/pages/TripDetails'
+import DriverSchedule from './presentation/driver/pages/Schedule'
+import DriverVehicle from './presentation/driver/pages/Vehicle'
+import DriverTracking from './presentation/driver/pages/Tracking'
+import DriverNotifications from './presentation/driver/pages/Notifications'
+import DriverChat from './presentation/driver/pages/Chat'
+import DriverProfile from './presentation/driver/pages/Profile'
+
 export default function App() {
   return (
     <Routes>
@@ -135,6 +146,19 @@ export default function App() {
         <Route path="tracking" element={<ProtectedRoute roles={['admin']}><TrackingPage /></ProtectedRoute>} />
         <Route path="roles" element={<ProtectedRoute roles={['admin']}><RolesPage /></ProtectedRoute>} />
         <Route path="support" element={<SupportHub />} />
+      </Route>
+
+      <Route path="/driver" element={<ProtectedRoute roles={['driver']}><DriverLayout /></ProtectedRoute>}>
+        <Route index element={<Navigate to="/driver/dashboard" replace />} />
+        <Route path="dashboard" element={<DriverDashboard />} />
+        <Route path="trips" element={<DriverTrips />} />
+        <Route path="trips/:id" element={<DriverTripDetails />} />
+        <Route path="schedule" element={<DriverSchedule />} />
+        <Route path="vehicle" element={<DriverVehicle />} />
+        <Route path="tracking" element={<DriverTracking />} />
+        <Route path="notifications" element={<DriverNotifications />} />
+        <Route path="chat" element={<DriverChat />} />
+        <Route path="profile" element={<DriverProfile />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
