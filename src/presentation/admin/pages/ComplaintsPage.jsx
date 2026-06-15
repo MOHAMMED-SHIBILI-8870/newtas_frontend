@@ -15,7 +15,7 @@ const normalizeComplaint = (complaint) => ({
   status: String(complaint?.status || 'open').toLowerCase(),
   priority: String(complaint?.priority || 'medium').toLowerCase(),
   assignee: complaint?.assignee?.full_name || complaint?.assignee?.email || complaint?.assigned_to || 'Unassigned',
-  customer: complaint?.user?.full_name || complaint?.user?.email || complaint?.customer_name || 'Unknown customer',
+  customer: complaint?.user?.name || complaint?.user?.full_name || complaint?.user?.email || complaint?.customer_name || 'Unknown customer',
 })
 
 export default function ComplaintsPage() {

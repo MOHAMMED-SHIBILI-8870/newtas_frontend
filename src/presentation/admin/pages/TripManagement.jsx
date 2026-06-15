@@ -284,7 +284,7 @@ export default function TripManagement() {
                       </td>
                       <td className="p-4">
                         <div className="font-semibold text-blue-600">
-                          {order.user?.full_name || order.user?.email || 'Unknown User'}
+                          {order.user?.name || order.user?.full_name || order.user?.email || 'Unknown User'}
                         </div>
                         <div className="text-xs text-slate-500">{order.user?.email || 'Unknown email'}</div>
                       </td>

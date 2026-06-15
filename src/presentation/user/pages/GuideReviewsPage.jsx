@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Star, RefreshCw, MessageSquareQuote, ThumbsUp } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { fetchAdminReviews } from '../../../services/reviewsService'
+import { fetchAssignedReviews } from '../../../services/reviewsService'
 import { getApiErrorMessage } from '../../../infrastructure/api/apiHelpers'
 import DataTable from '../../../components/DataTable'
 
@@ -30,53 +30,15 @@ export default function GuideReviewsPage() {
         setRefreshing(true)
       }
 
-      let reviewData;
-      try {
-        reviewData = await fetchAdminReviews()
-      } catch (error) {
-        if (error?.response?.status === 403 || error?.status === 403 || String(error).includes('403') || String(error).includes('access denied')) {
-          try {
-            const loginRes = await fetch('http://localhost:8997/api/v1/auth/login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: 'admin@example.com', password: 'password123' })
-            });
-            const loginData = await loginRes.json();
-            const token = loginData?.data?.token;
-            if (token) {
-              const rolesRes = await fetch('http://localhost:8997/api/v1/admin/rbac/roles', { headers: { Authorization: `Bearer ${token}` } });
-              const roles = (await rolesRes.json())?.data || [];
-              const permsRes = await fetch('http://localhost:8997/api/v1/admin/rbac/permissions', { headers: { Authorization: `Bearer ${token}` } });
-              const perms = (await permsRes.json())?.data || [];
-              const reviewPerm = perms.find(p => p.key === 'manage_reviews');
-              if (reviewPerm) {
-                for (const r of roles) {
-                  if (r.name === 'guide' || r.name === 'supportagent') {
-                    await fetch(`http://localhost:8997/api/v1/admin/rbac/roles/${r.id}/permissions`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                      body: JSON.stringify({ permission_id: reviewPerm.id })
-                    });
-                  }
-                }
-                reviewData = await fetchAdminReviews();
-              } else {
-                throw error;
-              }
-            } else {
-              throw error;
-            }
-          } catch (fixErr) {
-            console.error('Auto-fix failed', fixErr);
-            throw error;
-          }
-        } else {
-          throw error;
-        }
-      }
+      const reviewData = await fetchAssignedReviews()
 
-      setReviews(Array.isArray(reviewData) ? reviewData.map(normalizeReview) : [])
+      setReviews(
+        Array.isArray(reviewData)
+          ? reviewData.map(normalizeReview)
+          : []
+      )
     } catch (error) {
+      console.error(error)
       toast.error(getApiErrorMessage(error, 'Failed to load reviews'))
       setReviews([])
     } finally {
@@ -84,7 +46,6 @@ export default function GuideReviewsPage() {
       setRefreshing(false)
     }
   }
-
   useEffect(() => {
     void loadReviews()
   }, [])
@@ -129,7 +90,7 @@ export default function GuideReviewsPage() {
           <p className="text-2xl font-bold text-slate-900">{averageRating}</p>
           <p className="text-xs text-slate-400 mt-1">Out of 5 stars</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">

@@ -35,7 +35,7 @@ export default function PaymentPage() {
         const query = search.trim().toLowerCase()
         if (!query) return true
         return (
-          String(booking?.user?.full_name || '').toLowerCase().includes(query) ||
+          String(booking?.user?.name || booking?.user?.full_name || '').toLowerCase().includes(query) ||
           String(booking?.user?.email || '').toLowerCase().includes(query) ||
           String(booking?.trip?.from || '').toLowerCase().includes(query) ||
           String(booking?.trip?.to || '').toLowerCase().includes(query)
@@ -93,7 +93,7 @@ export default function PaymentPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-950">{booking.user?.full_name || 'Unknown user'}</div>
+                      <div className="font-semibold text-slate-950">{booking.user?.name || booking.user?.full_name || 'Unknown user'}</div>
                       <div className="text-sm text-slate-500">{booking.user?.email || 'No email found'}</div>
                     </td>
                     <td className="px-6 py-4">

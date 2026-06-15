@@ -1,12 +1,59 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAuth } from '../../../domain/context/AuthContext'
 import SectionHeading from '../../components/SectionHeading'
 import StatusBadge from '../../components/StatusBadge'
+import { createComplaint } from '../../../services/complaintsService'
+import { fetchMyBookings } from '../../../infrastructure/api/tripService'
 
 export default function ProfilePage() {
   const { user, logout, isAdmin } = useAuth()
+  const [complaintTitle, setComplaintTitle] = useState('')
+  const [complaintDescription, setComplaintDescription] = useState('')
+  const [selectedBooking, setSelectedBooking] = useState('')
+  const [bookings, setBookings] = useState([])
+  const [submittingComplaint, setSubmittingComplaint] = useState(false)
+
+  useEffect(() => {
+    const loadBookings = async () => {
+      try {
+        const myBookings = await fetchMyBookings()
+        setBookings(Array.isArray(myBookings) ? myBookings : [])
+      } catch (error) {
+        console.error('Failed to load bookings for complaints', error)
+      }
+    }
+    void loadBookings()
+  }, [])
+
+  const handleComplaintSubmit = async (e) => {
+    e.preventDefault()
+    if (!selectedBooking) {
+      toast.error('Please select a booking')
+      return
+    }
+    if (!complaintTitle.trim() || !complaintDescription.trim()) {
+      toast.error('Please enter title and description')
+      return
+    }
+    setSubmittingComplaint(true)
+    try {
+      await createComplaint({
+        booking_id: Number(selectedBooking),
+        title: complaintTitle,
+        description: complaintDescription,
+      })
+      toast.success('Complaint submitted successfully!')
+      setComplaintTitle('')
+      setComplaintDescription('')
+      setSelectedBooking('')
+    } catch (error) {
+      toast.error('Failed to submit complaint')
+    } finally {
+      setSubmittingComplaint(false)
+    }
+  }
 
   const profileRows = useMemo(
     () => [
@@ -77,6 +124,57 @@ export default function ProfilePage() {
             Logout
           </button>
         </div>
+      </div>
+
+      <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm mt-8">
+        <div className="border-b border-slate-200 p-8">
+          <h3 className="text-xl font-bold text-slate-900">File a Complaint</h3>
+          <p className="mt-1 text-sm text-slate-500">Have an issue with a recent booking? Let us know.</p>
+        </div>
+        <form onSubmit={handleComplaintSubmit} className="p-8 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Select Booking</label>
+            <select
+              value={selectedBooking}
+              onChange={(e) => setSelectedBooking(e.target.value)}
+              className="mt-1 block w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 px-4 text-sm outline-none transition focus:border-cyan-300"
+            >
+              <option value="">-- Choose a booking --</option>
+              {bookings.map((b) => (
+                <option key={b.id} value={b.id}>
+                  Booking #{b.id} ({b.trip?.from || 'Unknown'} → {b.trip?.to || 'Unknown'})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Title</label>
+            <input
+              type="text"
+              value={complaintTitle}
+              onChange={(e) => setComplaintTitle(e.target.value)}
+              placeholder="Brief summary of your issue"
+              className="mt-1 block w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 px-4 text-sm outline-none transition focus:border-cyan-300"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Description</label>
+            <textarea
+              value={complaintDescription}
+              onChange={(e) => setComplaintDescription(e.target.value)}
+              placeholder="Detailed explanation of the problem"
+              rows={4}
+              className="mt-1 block w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 px-4 text-sm outline-none transition focus:border-cyan-300"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={submittingComplaint}
+            className="rounded-full bg-cyan-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-cyan-700 disabled:opacity-50"
+          >
+            {submittingComplaint ? 'Submitting...' : 'Submit Complaint'}
+          </button>
+        </form>
       </div>
     </div>
   )
