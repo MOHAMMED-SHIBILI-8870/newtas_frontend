@@ -53,7 +53,7 @@ const adminLinks = [
 ]
 
 const supportLinks = [
-  { label: 'Chat', to: '/chat', icon: MessageCircle },
+  { label: 'Chat', to: '/support', icon: MessageCircle },
   { label: 'Reviews', to: '/reviews', icon: Star },
   { label: 'Notifications', to: '/notifications', icon: Bell },
   { label: 'Profile', to: '/profile', icon: CircleUserRound },

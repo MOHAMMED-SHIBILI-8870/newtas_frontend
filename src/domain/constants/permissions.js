@@ -65,7 +65,7 @@ export const getRedirectPathForRole = (role) => {
   }
 
   if (normalizedRole === 'supportagent') {
-    return '/chat'
+    return '/support'
   }
 
   return '/dashboard'
