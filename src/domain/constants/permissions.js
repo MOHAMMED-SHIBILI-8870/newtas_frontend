@@ -13,7 +13,7 @@ export const ROLE_PERMISSION_MAP = {
     'tracking.read',
   ],
   driver: ['dashboard.read', 'bookings.read', 'notifications.read', 'tracking.read', 'trips.read'],
-  guide: ['dashboard.read', 'bookings.read', 'notifications.read', 'trips.read'],
+  guide: ['dashboard.read', 'bookings.read', 'notifications.read', 'trips.read', 'manage_reviews', 'reviews.read'],
   user: [
     'dashboard.read',
     'bookings.read',
@@ -24,7 +24,13 @@ export const ROLE_PERMISSION_MAP = {
     'reviews.write',
     'complaints.write',
     'offers.read',
+    'offers.read',
     'tracking.read',
+  ],
+  supportagent: [
+    'reviews.read',
+    'complaints.read',
+    'dashboard.read',
   ],
 }
 
@@ -55,7 +61,11 @@ export const getRedirectPathForRole = (role) => {
   }
 
   if (normalizedRole === 'guide') {
-    return '/my-trips'
+    return '/chat'
+  }
+
+  if (normalizedRole === 'supportagent') {
+    return '/chat'
   }
 
   return '/dashboard'

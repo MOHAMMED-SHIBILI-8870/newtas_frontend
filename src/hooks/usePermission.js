@@ -37,5 +37,10 @@ export const usePermission = () => {
     hasPermission,
     hasAllPermissions,
     hasAnyPermission,
+    isAdmin: auth?.user?.role === 'admin',
+    isSupportAgent: auth?.user?.role === 'supportagent',
+    isGuide: auth?.user?.role === 'guide',
+    isAgency: auth?.user?.role === 'agency',
+    isDriver: auth?.user?.role === 'driver',
   }
 }

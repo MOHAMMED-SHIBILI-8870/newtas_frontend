@@ -35,6 +35,10 @@ import ComplaintsPage from './presentation/admin/pages/ComplaintsPage'
 import TrackingPage from './presentation/admin/pages/TrackingPage'
 import RolesPage from './presentation/admin/pages/RolesPage'
 import TripVerificationPage from './presentation/user/pages/TripVerificationPage'
+import ChatPage from './presentation/user/pages/ChatPage'
+import GuideReviewsPage from './presentation/user/pages/GuideReviewsPage'
+import SupportComplaintsPage from './presentation/user/pages/SupportComplaintsPage'
+import SupportHub from './presentation/admin/pages/SupportHub'
 
 export default function App() {
   return (
@@ -92,7 +96,7 @@ export default function App() {
         }
       />
 
-      <Route element={<ProtectedRoute roles={['user', 'agency', 'driver', 'guide']}><UserLayout /></ProtectedRoute>}>
+      <Route element={<ProtectedRoute roles={['user', 'agency', 'driver', 'guide', 'supportagent']}><UserLayout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/bookings" element={<BookingsPage />} />
         <Route path="/history" element={<HistoryPage />} />
@@ -104,6 +108,10 @@ export default function App() {
           element={<PaymentGateway />}
         />
         <Route path="/booking/:bookingId/verify" element={<TripVerificationPage />} />
+        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/reviews" element={<GuideReviewsPage />} />
+        <Route path="/support" element={<SupportHub />} />
+        <Route path="/complaints" element={<SupportComplaintsPage />} />
       </Route>
 
       <Route element={<ProtectedRoute><UserLayout /></ProtectedRoute>}>
@@ -112,20 +120,21 @@ export default function App() {
 
       <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminLayout /></ProtectedRoute>}>
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="users" element={<UserManagement />} />
-        <Route path="trips" element={<TripManagement />} />
-        <Route path="bookings" element={<BookingManagementPage />} />
+        <Route path="dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="users" element={<ProtectedRoute roles={['admin']}><UserManagement /></ProtectedRoute>} />
+        <Route path="trips" element={<ProtectedRoute roles={['admin']}><TripManagement /></ProtectedRoute>} />
+        <Route path="bookings" element={<ProtectedRoute roles={['admin']}><BookingManagementPage /></ProtectedRoute>} />
         <Route path="orders" element={<Navigate to="/admin/bookings" replace />} />
-        <Route path="payments" element={<PaymentsPage />} />
-        <Route path="notifications" element={<NotificationManagementPage />} />
-        <Route path="ai-requests" element={<AIApprovalPage />} />
-        <Route path="vehicles" element={<VehiclesPage />} />
-        <Route path="offers" element={<OffersPage />} />
+        <Route path="payments" element={<ProtectedRoute roles={['admin']}><PaymentsPage /></ProtectedRoute>} />
+        <Route path="notifications" element={<ProtectedRoute roles={['admin']}><NotificationManagementPage /></ProtectedRoute>} />
+        <Route path="ai-requests" element={<ProtectedRoute roles={['admin']}><AIApprovalPage /></ProtectedRoute>} />
+        <Route path="vehicles" element={<ProtectedRoute roles={['admin']}><VehiclesPage /></ProtectedRoute>} />
+        <Route path="offers" element={<ProtectedRoute roles={['admin']}><OffersPage /></ProtectedRoute>} />
         <Route path="reviews" element={<ReviewsPage />} />
         <Route path="complaints" element={<ComplaintsPage />} />
-        <Route path="tracking" element={<TrackingPage />} />
-        <Route path="roles" element={<RolesPage />} />
+        <Route path="tracking" element={<ProtectedRoute roles={['admin']}><TrackingPage /></ProtectedRoute>} />
+        <Route path="roles" element={<ProtectedRoute roles={['admin']}><RolesPage /></ProtectedRoute>} />
+        <Route path="support" element={<SupportHub />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

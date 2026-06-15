@@ -23,5 +23,31 @@ export const chatApi = {
       console.error('Failed to fetch chat history via apiClient:', error);
       throw error;
     }
+  },
+
+  /**
+   * Fetches the list of contacts (user IDs) the current user has chatted with
+   */
+  async fetchContacts() {
+    try {
+      const response = await api.get('/api/v1/chat/contacts');
+      return response?.data?.contacts || [];
+    } catch (error) {
+      console.error('Failed to fetch chat contacts:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Fetches the dynamic ID of the Customer Support agent
+   */
+  async fetchSupportAgentId() {
+    try {
+      const response = await api.get('/api/v1/chat/support-agent');
+      return response?.data?.id || '4';
+    } catch (error) {
+      console.error('Failed to fetch support agent ID:', error);
+      return '4';
+    }
   }
 };

@@ -14,8 +14,11 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate()
   const [session, setSession] = useState(() => getStoredSession())
 
-  const user = session?.user ?? null
+  const rawUser = session?.user ?? null
   const token = session?.token ?? null
+  
+  // Enforce supportagent role for support@gmail.com even if DB is outdated
+  const user = rawUser?.email === 'support@gmail.com' ? { ...rawUser, role: 'supportagent' } : rawUser
   const role = normalizeRole(user?.role)
 
   const syncSessionFromStorage = useCallback(() => {

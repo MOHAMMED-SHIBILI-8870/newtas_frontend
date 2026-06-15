@@ -14,9 +14,12 @@ import {
   CircleUserRound,
   Sparkles,
   ClipboardList,
-  Users,
   MapPinned,
   Route,
+  MessageCircle,
+  Star,
+  AlertTriangle,
+  Users,
 } from 'lucide-react'
 import { usePermission } from '../../hooks/usePermission'
 import NotificationBell from './NotificationBell'
@@ -33,6 +36,7 @@ const userLinks = [
   { label: 'Packages', to: '/packages', icon: PackageSearch },
   { label: 'Bookings', to: '/bookings', icon: BookOpen },
   { label: 'History', to: '/history', icon: History },
+  { label: 'Chat', to: '/chat', icon: MessageCircle },
   { label: 'My Trips', to: '/my-trips', icon: Sparkles },
   { label: 'Notifications', to: '/notifications', icon: Bell },
   { label: 'User Profile', to: '/profile', icon: CircleUserRound },
@@ -43,8 +47,16 @@ const adminLinks = [
   { label: 'Users', to: '/admin/users', icon: Users },
   { label: 'Trips', to: '/admin/trips', icon: MapPinned },
   { label: 'Orders', to: '/admin/bookings', icon: ClipboardList },
+  { label: 'Support Chats', to: '/admin/support', icon: MessageCircle },
   { label: 'Notifications', to: '/admin/notifications', icon: Bell },
   { label: 'AI Requests', to: '/admin/ai-requests', icon: Sparkles },
+]
+
+const supportLinks = [
+  { label: 'Chat', to: '/chat', icon: MessageCircle },
+  { label: 'Reviews', to: '/reviews', icon: Star },
+  { label: 'Notifications', to: '/notifications', icon: Bell },
+  { label: 'Profile', to: '/profile', icon: CircleUserRound },
 ]
 
 const agencyLinks = [
@@ -63,27 +75,26 @@ const driverLinks = [
 ]
 
 const guideLinks = [
-  { label: 'My Trips', to: '/my-trips', icon: ClipboardList },
+  { label: 'Chat', to: '/chat', icon: MessageCircle },
+  { label: 'Reviews', to: '/reviews', icon: Star },
   { label: 'Notifications', to: '/notifications', icon: Bell },
   { label: 'Profile', to: '/profile', icon: CircleUserRound },
 ]
 
 const navLinkClass = ({ isActive }) =>
-  `rounded-full px-4 py-2 text-sm font-medium transition ${
-    isActive
-      ? 'bg-slate-950 text-white shadow-lg shadow-slate-950/15'
-      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
+  `rounded-full px-4 py-2 text-sm font-medium transition ${isActive
+    ? 'bg-slate-950 text-white shadow-lg shadow-slate-950/15'
+    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
   }`
 
 const mobileLinkClass = ({ isActive }) =>
-  `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
-    isActive
-      ? 'bg-slate-950 text-white shadow-lg shadow-slate-950/10'
-      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
+  `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${isActive
+    ? 'bg-slate-950 text-white shadow-lg shadow-slate-950/10'
+    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
   }`
 
 const Navbar = () => {
-  const { user, isAuthenticated, isAdmin, isAgency, isDriver, isGuide, logout, getRedirectPathForRole, role } =
+  const { user, isAuthenticated, isAdmin, isAgency, isDriver, isGuide, isSupportAgent, logout, getRedirectPathForRole, role } =
     usePermission()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
@@ -103,6 +114,10 @@ const Navbar = () => {
       return adminLinks
     }
 
+    if (isSupportAgent) {
+      return supportLinks
+    }
+
     if (isAgency) {
       return agencyLinks
     }
@@ -116,7 +131,7 @@ const Navbar = () => {
     }
 
     return userLinks
-  }, [isAdmin, isAgency, isAuthenticated, isDriver, isGuide])
+  }, [isAdmin, isSupportAgent, isAgency, isAuthenticated, isDriver, isGuide])
 
   const initials = (user?.full_name || user?.email || 'U')
     .trim()
@@ -176,7 +191,7 @@ const Navbar = () => {
                   </span>
                   <span className="hidden flex-col items-start leading-tight sm:flex">
                     <span className="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">
-                      {isAdmin ? 'Admin' : 'User'}
+                      {isAdmin ? 'Admin' : isSupportAgent ? 'Support' : isGuide ? 'Guide' : 'User'}
                     </span>
                     <span className="max-w-[160px] truncate text-sm font-semibold text-slate-900">
                       {user?.full_name || user?.email || 'Account'}

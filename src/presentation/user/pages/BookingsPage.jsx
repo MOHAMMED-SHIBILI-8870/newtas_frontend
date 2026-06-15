@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { CalendarDays, Search, CreditCard } from 'lucide-react'
+import { CalendarDays, Search, CreditCard, Star } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { createReview } from '../../../services/reviewsService'
 import { fetchMyBookings } from '../../../infrastructure/api/tripService'
 import { getApiErrorMessage } from '../../../infrastructure/api/apiHelpers'
 import SectionHeading from '../../components/SectionHeading'
@@ -14,6 +15,39 @@ export default function BookingsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const navigate = useNavigate()
+
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
+  const [reviewTripId, setReviewTripId] = useState(null)
+  const [rating, setRating] = useState(5)
+  const [comment, setComment] = useState('')
+  const [submittingReview, setSubmittingReview] = useState(false)
+
+  const handleOpenReview = (tripId) => {
+    setReviewTripId(tripId)
+    setRating(5)
+    setComment('')
+    setReviewModalOpen(true)
+  }
+
+  const handleSubmitReview = async () => {
+    if (!reviewTripId) return
+    setSubmittingReview(true)
+    try {
+      await createReview({
+        trip_id: reviewTripId,
+        rating: rating,
+        comment: comment
+      })
+      toast.success('Review submitted successfully!')
+      setReviewModalOpen(false)
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Failed to submit review'))
+    } finally {
+      setSubmittingReview(false)
+    }
+  }
+
+  // isCompleted check removed to allow reviewing at any time
 
   useEffect(() => {
     const loadBookings = async () => {
@@ -163,13 +197,70 @@ export default function BookingsPage() {
                     {booking.payment_status === 'advance_paid' ? 'Pay Remaining Balance' : 'Proceed to Payment'}
                   </button>
                 ) : (
-                  <span className="text-sm font-semibold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl">
-                    ✓ Order Fully Cleared
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl">
+                      ✓ Order Fully Cleared
+                    </span>
+                    {booking.status !== 'cancelled' && (
+                      <button
+                        onClick={() => handleOpenReview(booking.trip_id)}
+                        className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
+                      >
+                        <Star className="h-4 w-4 fill-current text-amber-400" />
+                        Leave a Review
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </article>
           ))}
+        </div>
+      )}
+
+      {reviewModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/20 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-[32px] bg-white p-8 shadow-xl">
+            <h2 className="text-2xl font-black text-slate-950">Leave a Review</h2>
+            <p className="mt-2 text-sm text-slate-500">Rate your experience and let us know how we did.</p>
+            
+            <div className="mt-6 flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  className={`p-1 transition-transform hover:scale-110 ${star <= rating ? 'text-amber-400' : 'text-slate-200'}`}
+                >
+                  <Star className="h-8 w-8 fill-current" />
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Tell us about your trip... (optional)"
+              className="mt-6 w-full rounded-2xl border border-slate-200 p-4 text-sm outline-none transition focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+              rows={4}
+            />
+
+            <div className="mt-8 flex gap-3">
+              <button
+                onClick={() => setReviewModalOpen(false)}
+                className="flex-1 rounded-full bg-slate-100 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitReview}
+                disabled={submittingReview}
+                className="flex-1 rounded-full bg-cyan-600 py-3 text-sm font-semibold text-white transition hover:bg-cyan-700 disabled:opacity-50"
+              >
+                {submittingReview ? 'Submitting...' : 'Submit'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
