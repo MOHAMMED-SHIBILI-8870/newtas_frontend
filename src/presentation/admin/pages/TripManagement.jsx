@@ -28,6 +28,7 @@ import { getApiErrorMessage } from '../../../infrastructure/api/apiHelpers'
 const initialForm = {
   from: '',
   to: '',
+  image_url: '',
   duration: 1,
   min_duration: 1,
   concurrent_slots: 1,
@@ -89,6 +90,7 @@ export default function TripManagement() {
     setFormData({
       from: trip.from || '',
       to: trip.to || '',
+      image_url: trip.image_url || '',
       duration: trip.duration || 1,
       min_duration: trip.min_duration || 1,
       concurrent_slots: trip.concurrent_slots || 1,
@@ -357,6 +359,16 @@ export default function TripManagement() {
                     onChange={(e) => setFormData({ ...formData, to: e.target.value })}
                   />
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-white/60">Image URL</label>
+                <input
+                  placeholder="e.g. https://images.unsplash.com/photo-..."
+                  className="rounded-xl border border-white/10 bg-black p-3 text-sm text-white outline-none transition focus:border-yellow-400/80"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                />
               </div>
 
               <div className="grid grid-cols-4 gap-4">

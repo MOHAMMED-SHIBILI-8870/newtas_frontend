@@ -5,7 +5,7 @@ import { ShieldAlert, MessageCircle, Send, Star, AlertTriangle, UserCircle } fro
 import { Link, useLocation } from 'react-router-dom';
 import { chatApi } from '../../../infrastructure/api/chatApi';
 
-const SupportChatArea = ({ currentAdminId, targetUserId }) => {
+const SupportChatArea = ({ currentAdminId, targetUserId, targetUserName }) => {
   const { messages, connectionStatus, loadingHistory, isPartnerOnline, sendMessage } = useChat(
     currentAdminId,
     targetUserId
@@ -56,7 +56,9 @@ const SupportChatArea = ({ currentAdminId, targetUserId }) => {
             <UserCircle className="h-5 w-5" />
           </div>
           <div>
-            <h2 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-800'}`}>User ID: {targetUserId}</h2>
+            <h2 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-800'}`}>
+              {targetUserName || `User ID: ${targetUserId}`}
+            </h2>
             <div className="flex items-center gap-1.5">
               <span className={`h-2 w-2 rounded-full ${isPartnerOnline ? 'bg-emerald-500' : isDark ? 'bg-white/20' : 'bg-slate-300'}`}></span>
               <span className={`text-xs font-medium ${isDark ? 'text-white/60' : 'text-slate-550'}`}>{isPartnerOnline ? 'Online' : 'Offline'}</span>
@@ -138,7 +140,7 @@ export default function SupportHub() {
   const { pathname } = useLocation();
   const isDark = pathname.startsWith('/admin') || pathname.startsWith('/driver');
 
-  const [activeUserId, setActiveUserId] = useState('');
+  const [activeContact, setActiveContact] = useState(null);
   const [contacts, setContacts] = useState([]);
   const [loadingContacts, setLoadingContacts] = useState(true);
 
@@ -211,25 +213,26 @@ export default function SupportHub() {
                   No one has contacted support yet.
                 </div>
               ) : (
-                contacts.map((contactId) => (
+                contacts.map((contact) => (
                   <button
-                    key={contactId}
-                    onClick={() => setActiveUserId(contactId)}
+                    key={contact.id}
+                    onClick={() => setActiveContact(contact)}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
-                      activeUserId === contactId 
+                      activeContact?.id === contact.id 
                         ? isDark ? 'bg-yellow-400 text-slate-950 font-bold shadow-sm' : 'bg-slate-900 text-white shadow-sm' 
                         : isDark ? 'hover:bg-white/5 border border-white/5 text-white/90' : 'hover:bg-slate-50 border border-slate-100 text-slate-700'
                     }`}
                   >
                     <div className={`flex items-center justify-center h-10 w-10 rounded-full ${
-                      activeUserId === contactId
+                      activeContact?.id === contact.id
                         ? isDark ? 'bg-yellow-500 text-slate-950' : 'bg-slate-850 text-white'
                         : isDark ? 'bg-zinc-800 text-white' : 'bg-slate-100 text-slate-600'
                     }`}>
                       <UserCircle className="h-5 w-5" />
                     </div>
                     <div className="text-left flex-1 overflow-hidden">
-                      <h4 className="text-sm font-semibold truncate">User ID: {contactId}</h4>
+                      <h4 className="text-sm font-semibold truncate">{contact.name}</h4>
+                      <p className="text-xs opacity-60">ID: {contact.id}</p>
                     </div>
                   </button>
                 ))
@@ -239,7 +242,11 @@ export default function SupportHub() {
         </div>
 
         <div className="lg:col-span-2">
-          <SupportChatArea currentAdminId={currentAdminId} targetUserId={activeUserId} />
+          <SupportChatArea 
+            currentAdminId={currentAdminId} 
+            targetUserId={activeContact?.id} 
+            targetUserName={activeContact?.name} 
+          />
         </div>
       </div>
     </div>

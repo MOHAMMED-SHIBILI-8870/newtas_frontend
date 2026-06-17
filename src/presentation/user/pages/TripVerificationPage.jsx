@@ -13,7 +13,6 @@ export default function TripVerificationPage() {
     fullName: '',
     address: '',
     phoneNumber: '',
-    members: 1,
   })
   const [idImage, setIdImage] = useState(null)
   const [submitting, setSubmitting] = useState(false)
@@ -45,7 +44,6 @@ export default function TripVerificationPage() {
       data.append('full_name', formData.fullName)
       data.append('address', formData.address)
       data.append('phone_number', formData.phoneNumber)
-      data.append('members', formData.members)
       data.append('id_image', idImage)
 
       await submitVerification(data)
@@ -102,34 +100,18 @@ export default function TripVerificationPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700 flex items-center gap-2">
-                <Phone className="h-4 w-4" /> Phone Number
-              </label>
-              <input
-                type="tel"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                placeholder="+91"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700 flex items-center gap-2">
-                <Users className="h-4 w-4" /> Total Members
-              </label>
-              <input
-                type="number"
-                name="members"
-                min="1"
-                value={formData.members}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
-              />
-            </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <Phone className="h-4 w-4" /> Phone Number
+            </label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              placeholder="+91"
+            />
           </div>
 
           <div>

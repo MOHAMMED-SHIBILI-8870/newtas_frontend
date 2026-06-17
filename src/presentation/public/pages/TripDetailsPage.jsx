@@ -207,7 +207,15 @@ export default function TripDetailsPage() {
                   <input
                     type="date"
                     value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
+                    onChange={(e) => {
+                      const newStartDate = e.target.value;
+                      setStartDate(newStartDate);
+                      if (newStartDate && trip?.duration) {
+                        const start = new Date(newStartDate);
+                        start.setDate(start.getDate() + (trip.duration - 1));
+                        setEndDate(start.toISOString().split('T')[0]);
+                      }
+                    }}
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     min={new Date().toISOString().split('T')[0]}
                   />
@@ -217,9 +225,8 @@ export default function TripDetailsPage() {
                   <input
                     type="date"
                     value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                    min={startDate || new Date().toISOString().split('T')[0]}
+                    disabled
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-slate-100 text-slate-500 cursor-not-allowed"
                   />
                 </div>
               </div>

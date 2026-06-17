@@ -113,50 +113,45 @@ export default function ChatPage() {
   const { user } = usePermission();
   const currentUserId = user?.id || user?.sub;
 
-  const [contacts, setContacts] = useState(() => {
-    const saved = localStorage.getItem('chat_contacts');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Failed to parse contacts', e);
-      }
-    }
-    return [{ id: 'support', name: 'Customer Support', type: 'support' }];
-  });
+  const [contacts, setContacts] = useState([{ id: 'support', name: 'Customer Support', type: 'support' }]);
 
   const [selectedPartnerId, setSelectedPartnerId] = useState('support');
   const [newGuideId, setNewGuideId] = useState('');
   const [realSupportId, setRealSupportId] = useState('support');
 
-  // Fetch dynamic support ID
+  // Fetch dynamic support ID and Contacts
   useEffect(() => {
-    const fetchSupportId = async () => {
-      const id = await chatApi.fetchSupportAgentId();
-      if (id) {
-        setRealSupportId(id);
-        setContacts(prev => {
-          const updated = [...prev];
-          const supportIndex = updated.findIndex(c => c.type === 'support');
-          if (supportIndex !== -1) {
-            updated[supportIndex] = { ...updated[supportIndex], id };
-          } else {
-            updated.unshift({ id, name: 'Customer Support', type: 'support' });
-          }
-          return updated;
-        });
-        if (selectedPartnerId === 'support') {
-          setSelectedPartnerId(id);
+    const loadData = async () => {
+      try {
+        const [serverContacts, supportId] = await Promise.all([
+          chatApi.fetchContacts(),
+          chatApi.fetchSupportAgentId()
+        ]);
+        
+        if (supportId) {
+          setRealSupportId(supportId);
         }
+
+        let merged = Array.isArray(serverContacts) ? [...serverContacts] : [];
+        const supportIndex = merged.findIndex(c => c.type === 'support' || c.id === supportId);
+        
+        if (supportIndex === -1 && supportId) {
+          merged.unshift({ id: supportId, name: 'Customer Support', type: 'support' });
+        } else if (supportIndex !== -1 && supportId) {
+          merged[supportIndex].id = supportId;
+          merged[supportIndex].type = 'support';
+        }
+
+        setContacts(merged);
+        if (selectedPartnerId === 'support' && supportId) {
+          setSelectedPartnerId(supportId);
+        }
+      } catch (err) {
+        console.error('Error loading chat contacts:', err);
       }
     };
-    fetchSupportId();
+    loadData();
   }, []);
-
-  // Persist contacts when updated
-  useEffect(() => {
-    localStorage.setItem('chat_contacts', JSON.stringify(contacts));
-  }, [contacts]);
 
   const handleAddGuide = (e) => {
     e.preventDefault();
